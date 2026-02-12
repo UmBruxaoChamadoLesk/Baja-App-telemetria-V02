@@ -17,3 +17,8 @@ Futuras atualizações planejam:
 Integração de gráficos interativos para análise dos dados do veículo.
 
 Possibilidade de gerenciamento e exportação de arquivos diretamente pelo app.
+![appv2](https://github.com/user-attachments/assets/3afef96f-85d5-4f37-8511-75ec8a3a610f)
+
+
+https://github.com/user-attachments/assets/b9489679-981d-4497-b906-63a27320df98
+
