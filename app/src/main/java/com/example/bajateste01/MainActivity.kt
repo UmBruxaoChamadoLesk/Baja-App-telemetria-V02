@@ -127,11 +127,11 @@ class MainActivity : AppCompatActivity() {
                 barraVelocidade.layoutParams = paramsVelo
 
                 val paramsTemp = barraTemperatura.layoutParams
-                paramsTemp.height = dpToPix(30)
+                paramsTemp.height = dpToPix(10)
                 barraTemperatura.layoutParams = paramsTemp
 
                 val paramsPress = barraPressao.layoutParams
-                paramsPress.height = dpToPix(70)
+                paramsPress.height = dpToPix(10)
                 barraPressao.layoutParams = paramsPress
 
                 // Força o redesenho
