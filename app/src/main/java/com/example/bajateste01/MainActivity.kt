@@ -1,9 +1,9 @@
 package com.example.bajateste01
 
-
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
@@ -15,13 +15,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
 
     private lateinit var textVelocidade: TextView
+    private lateinit var valBarraVelocidade: TextView
     private lateinit var textTemperatura: TextView
+    private lateinit var valBarraTemperatura: TextView
     private lateinit var textPressao: TextView
+    private lateinit var valBarraPressao: TextView
 
-    private lateinit var graphVelocidade: TextView
-    private lateinit var graphTemperatura: TextView
-    private lateinit var graphPressao: TextView
-
+    private lateinit var barraVelocidade: View
+    private lateinit var barraTemperatura: View
+    private lateinit var barraPressao: View
 
     private lateinit var api: ApiService
     private val handler = Handler(Looper.getMainLooper())
@@ -39,14 +41,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         textVelocidade = findViewById(R.id.textVelocidade)
-        textTemperatura = findViewById(R.id.textTemperatura)
-        textPressao = findViewById(R.id.textPressao)
+        valBarraVelocidade = findViewById(R.id.textBarraVelocidadeVal)
 
-        //parte dos graficos
-        graphVelocidade = findViewById(R.id.BarraVelocidade)
-        graphTemperatura = findViewById(R.id.BarraTemperatura)
-        graphPressao = findViewById(R.id.BarraPressao)
-        //
+        textTemperatura = findViewById(R.id.textTemperatura)
+        valBarraTemperatura = findViewById(R.id.textBarraTemperaturaVal)
+
+        textPressao = findViewById(R.id.textPressao)
+        valBarraPressao = findViewById(R.id.textBarraPressaoVal)
+
+        // parte dos graficos-CORRIGIDO
+        barraVelocidade = findViewById(R.id.barraVelocidade)
+        barraTemperatura = findViewById(R.id.barraTemperatura)
+        barraPressao = findViewById(R.id.barraPressao)
 
         val retrofit = Retrofit.Builder()
             .baseUrl("http://192.168.1.158/") // IP do ESP32
@@ -59,6 +65,9 @@ class MainActivity : AppCompatActivity() {
         handler.post(updateRunnable)
     }
 
+    private fun dpToPix(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
 
     private fun fetchDados() {
         api.getDados().enqueue(object : Callback<Dados> {
@@ -66,23 +75,69 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val dados = response.body()
                     textVelocidade.text = "Velocidade: ${dados?.velocidade} km/h"
+                    valBarraVelocidade.text = "${dados?.velocidade}km/h"
                     textTemperatura.text = "Temperatura: ${dados?.temperatura} °C"
+                    valBarraTemperatura.text = "${dados?.velocidade}°C"
                     textPressao.text = "Pressão: ${dados?.pressao} hPa"
-                    //quando adicionar ou retirar os dados aqui modificar na classe primeiro e lembrar de atulizar os dados e a funcao callback
-                    /*
-                    //essa é a minha tentativa inicial de fazer altura y de um retangulo:textview ficar em função dos dados
-                    graphVelocidade.layout_height = dados?.velocidade
-                    graphTemperatura.layout_height = dados?.temperatura
-                    graphPressao.layout_height = dados?.pressao
+                    valBarraPressao.text = "${dados?.velocidade}hPa"
 
-                     */
+                    // CORRIGIDO: Atualização segura das alturas das barras
+                    dados?.let {
+                        // Converte os valores para Int (assumindo que são números)
+                        val alturaVelocidade = it.velocidade.toInt()
+                        val alturaTemperatura = it.temperatura.toInt()
+                        val alturaPressao = it.pressao.toInt()
+
+                        // Atualiza a altura da barra de velocidade
+                        val paramsVelo = barraVelocidade.layoutParams
+                        paramsVelo.height = alturaVelocidade
+                        barraVelocidade.layoutParams = paramsVelo
+
+                        // Atualiza a altura da barra de temperatura
+                        val paramsTemp = barraTemperatura.layoutParams
+                        paramsTemp.height = alturaTemperatura
+                        barraTemperatura.layoutParams = paramsTemp
+
+                        // Atualiza a altura da barra de pressão
+                        val paramsPress = barraPressao.layoutParams
+                        paramsPress.height = alturaPressao
+                        barraPressao.layoutParams = paramsPress
+
+                        // Força o redesenho das views
+                        barraVelocidade.requestLayout()
+                        barraTemperatura.requestLayout()
+                        barraPressao.requestLayout()
+                    }
                 }
             }
 
             override fun onFailure(call: Call<Dados>, t: Throwable) {
                 textVelocidade.text = "Erro de conexão"
+                valBarraVelocidade.text = "-"
+
                 textTemperatura.text = "-"
+                valBarraTemperatura.text = "-"
+
                 textPressao.text = "-"
+                valBarraPressao.text = "-"
+
+                // CORRIGIDO: Aplicação correta das alterações
+                val paramsVelo = barraVelocidade.layoutParams
+                paramsVelo.height = dpToPix(10)
+                barraVelocidade.layoutParams = paramsVelo
+
+                val paramsTemp = barraTemperatura.layoutParams
+                paramsTemp.height = dpToPix(30)
+                barraTemperatura.layoutParams = paramsTemp
+
+                val paramsPress = barraPressao.layoutParams
+                paramsPress.height = dpToPix(70)
+                barraPressao.layoutParams = paramsPress
+
+                // Força o redesenho
+                barraVelocidade.requestLayout()
+                barraTemperatura.requestLayout()
+                barraPressao.requestLayout()
             }
         })
     }
