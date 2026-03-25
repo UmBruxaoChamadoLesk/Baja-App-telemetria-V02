@@ -260,10 +260,10 @@ class MainActivity : AppCompatActivity() {
                         val temperatura = it.temperatura.toInt()
                         val pressao = it.pressao.toInt()
 
-                        val alturaVelocidade = calcularAlturaBarra(velocidade, VEL_MAX)
-                        val alturaRPM = calcularAlturaBarra(rpm, RPM_MAX)
-                        val alturaTemperatura = calcularAlturaBarra(temperatura, TEMP_MAX)
-                        val alturaPressao = calcularAlturaBarra(pressao, PRESS_MAX)
+                        val alturaVelocidade = calcularAlturaBarra(velocidade, VEL_MAX) *2
+                        val alturaRPM = calcularAlturaBarra(rpm, RPM_MAX) *2
+                        val alturaTemperatura = calcularAlturaBarra(temperatura, TEMP_MAX) *2
+                        val alturaPressao = calcularAlturaBarra(pressao, PRESS_MAX) *2
 
                         val paramsVelo = barraVelocidade.layoutParams
                         paramsVelo.height = alturaVelocidade
